@@ -95,7 +95,7 @@ library(psrcplot)
 as.data.frame(pums_workers$variables)
 srv_workers <- pums_workers %>% filter("industry_bin" == 'SRV')
 
-srv_barchart <- create_bar_chart(t=srv_workers, w.x="industry_bin", w.y="COUNTY", f="DATA_YEAR")
+srv_barchart <- create_bar_chart(t=srv_workers, w.x="industry_bin", w.y="JWMNP", f="DATA_YEAR")
 
 
 

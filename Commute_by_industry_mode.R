@@ -11,7 +11,7 @@ library(srvyr)
 library(stringr)
 library(tidyverse)
 
-setwd("J:/Projects/Home_Work_Connections/PUMS")
+# setwd("J:/Projects/Home_Work_Connections/PUMS")
 
 # Pull data
 
@@ -60,7 +60,7 @@ commutebyindustry_meanmedian <- inner_join(commutebyindustry_median, commutebyin
 
 library(openxlsx)
 
-write.xlsx(commutebyindustry_meanmedian, "meanmediancommutebyindustry_raw.xlsx")
+# write.xlsx(commutebyindustry_meanmedian, "meanmediancommutebyindustry_raw.xlsx")
 
 # Focus on just transit/SOV commutes
 
@@ -83,19 +83,38 @@ commutebyind_sovtransit_meanmedian <- inner_join(commutebyind_sovtransit_median_
                                            commutebyind_sovtransit_mean_pivot, by = 'industry_bin')
 library(openxlsx)
 
-write.xlsx(commutebyind_sovtransit_meanmedian, "meanmediancommutebyindustry_SOVTransit_raw.xlsx")
+# write.xlsx(commutebyind_sovtransit_meanmedian, "meanmediancommutebyindustry_SOVTransit_raw.xlsx")
 
 
 # ---------------------------------------------------
 
 # HISTOGRAM OF SRV INDUSTRY
 
-library(psrcplot)
+srv_workers <- pums_workers$variables %>% 
+  filter(industry_bin == 'SRV')
 
-as.data.frame(pums_workers$variables)
-srv_workers <- pums_workers %>% filter("industry_bin" == 'SRV')
+# interactive ggplot 
 
-srv_barchart <- create_bar_chart(t=srv_workers, w.x="industry_bin", w.y="JWMNP", f="DATA_YEAR")
+library(ggiraph)
+
+g <- ggplot(srv_workers) +
+  geom_histogram_interactive(aes(x = JWMNP, tooltip = JWMNP, fill = mode_bin)) +
+  facet_wrap(vars(industry_bin),
+             labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
+  theme(strip.text.x = element_text(size = 8))
+
+girafe(ggobj = g)
+
+# static ggplot
+
+ggplot(srv_workers) +
+  geom_histogram(aes(x = JWMNP, fill = mode_bin)) +
+  facet_wrap(vars(industry_bin),
+             labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
+  theme(strip.text.x = element_text(size = 8))
+
+
+  
 
 
 

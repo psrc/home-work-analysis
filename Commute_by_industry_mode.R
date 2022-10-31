@@ -2,7 +2,7 @@
 # GEOGRAPHIES: Region
 # SOURCE: 2020 5YR ACS PUMS
 # AUTHOR: Eric Clute
-# DATE MODIFIED: 10/28/2022
+# DATE MODIFIED: 10/31/2022
 
 library(magrittr)
 library(psrccensus)
@@ -15,7 +15,7 @@ setwd("J:/Projects/Home_Work_Connections/PUMS")
 
 # Pull data
 
-pums_raw <- get_psrc_pums(5,2020,"p", c("JWMNP","INDP","COW","JWTRNS"))
+pums_raw <- get_psrc_pums(5,2020,"p", c("JWMNP","INDP","JWTRNS","COW"))
 
 # Mutate data to create commute bins, mode bins, streamline/group by industry categories
 # Filter uses the COW (Class of worker) variable. Universe excludes ages <16, non workers. 
@@ -114,5 +114,14 @@ ggplot(srv_workers) +
   theme(strip.text.x = element_text(size = 8))
 
 
+# HISTOGRAM OF ALL INDUSTRIES
 
+library(ggiraph)
 
+hist_allworkers <- ggplot(pums_workers) +
+  geom_histogram_interactive(aes(x = JWMNP, tooltip = JWMNP, fill = mode_bin)) +
+  facet_wrap(vars(industry_bin),
+             labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
+  theme(strip.text.x = element_text(size = 8))
+
+girafe(ggobj = hist_allworkers)

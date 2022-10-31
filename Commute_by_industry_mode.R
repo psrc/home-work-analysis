@@ -91,35 +91,101 @@ write.xlsx(commutebyind_sovtransit_meanmedian, "meanmediancommutebyindustry_SOVT
 # HISTOGRAM OF SRV INDUSTRY
 
 srv_workers <- pums_workers$variables %>% 
-  filter(industry_bin == 'SRV')
+  filter(industry_bin == 'SRV',
+         mode_bin == 'Transit' | mode_bin == 'SOV')
 
 # interactive ggplot 
 
 library(ggiraph)
 
-g <- ggplot(srv_workers) +
+srv <- ggplot(srv_workers) +
   geom_histogram_interactive(aes(x = JWMNP, tooltip = JWMNP, fill = mode_bin)) +
   facet_wrap(vars(industry_bin),
              labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
   theme(strip.text.x = element_text(size = 8))
 
-girafe(ggobj = g)
+girafe(ggobj = srv)
 
-# static ggplot
+# # static ggplot
+# 
+# ggplot(srv_workers) +
+#   geom_histogram(aes(x = JWMNP, fill = mode_bin)) +
+#   facet_wrap(vars(industry_bin),
+#              labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
+#   theme(strip.text.x = element_text(size = 8))
 
-ggplot(srv_workers) +
-  geom_histogram(aes(x = JWMNP, fill = mode_bin)) +
+# HISTOGRAM OF SRV, RET, INF, EDU, MFG--------------
+
+# SRV--------------
+pums_workers_sovtransit <- pums_workers$variables %>% 
+  filter(mode_bin == 'Transit' | mode_bin == 'SOV')
+
+srv_workers <- pums_workers_sovtransit %>% 
+  filter(industry_bin == 'SRV')
+
+srv_hist <- ggplot(srv_workers) +
+  geom_histogram_interactive(aes(x = JWMNP, tooltip = JWMNP, fill = mode_bin)) +
   facet_wrap(vars(industry_bin),
              labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
   theme(strip.text.x = element_text(size = 8))
 
+girafe(ggobj = srv_hist)
 
-# HISTOGRAM OF ALL INDUSTRIES
+# RET--------------
+ret_workers <- pums_workers_sovtransit %>% 
+  filter(industry_bin == 'RET')
 
-library(ggiraph)
-
-hist_allworkers <- ggplot(pums_workers) +
+inf_hist <- ggplot(ret_workers) +
   geom_histogram_interactive(aes(x = JWMNP, tooltip = JWMNP, fill = mode_bin)) +
+  facet_wrap(vars(industry_bin),
+             labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
+  theme(strip.text.x = element_text(size = 8))
+
+girafe(ggobj = inf_hist)
+
+# INF--------------
+inf_workers <- pums_workers_sovtransit %>% 
+  filter(industry_bin == 'INF')
+
+inf_hist <- ggplot(inf_workers) +
+  geom_histogram_interactive(aes(x = JWMNP, tooltip = JWMNP, fill = mode_bin)) +
+  facet_wrap(vars(industry_bin),
+             labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
+  theme(strip.text.x = element_text(size = 8))
+
+girafe(ggobj = inf_hist)
+
+# EDU--------------
+edu_workers <- pums_workers_sovtransit %>% 
+  filter(industry_bin == 'EDU')
+
+edu_hist <- ggplot(edu_workers) +
+  geom_histogram_interactive(aes(x = JWMNP, tooltip = JWMNP, fill = mode_bin)) +
+  facet_wrap(vars(industry_bin),
+             labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
+  theme(strip.text.x = element_text(size = 8))
+
+girafe(ggobj = edu_hist)
+
+# MFG--------------
+mfg_workers <- pums_workers_sovtransit %>% 
+  filter(industry_bin == 'MFG')
+
+mfg_hist <- ggplot(mfg_workers) +
+  geom_histogram_interactive(aes(x = JWMNP, tooltip = JWMNP, fill = mode_bin)) +
+  facet_wrap(vars(industry_bin),
+             labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
+  theme(strip.text.x = element_text(size = 8))
+
+girafe(ggobj = mfg_hist)
+
+
+
+
+# HISTOGRAM OF ALL INDUSTRIES--------------
+
+hist_allworkers <- ggplot(pums_workers_sovtransit) +
+  geom_histogram_interactive(aes(x = JWMNP, tooltip = commute_bin, fill = mode_bin)) +
   facet_wrap(vars(industry_bin),
              labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
   theme(strip.text.x = element_text(size = 8))

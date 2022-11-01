@@ -193,3 +193,14 @@ hist_allworkers <- ggplot(pums_workers_sovtransit) +
   theme(strip.text.x = element_text(size = 8))
 
 girafe(ggobj = hist_allworkers)
+
+# Christy's test ----
+x <- pums_workers_sovtransit %>% filter(industry_bin == 'EXT') 
+
+g <- ggplot(x) +
+  geom_histogram_interactive(aes(x = JWMNP, tooltip = commute_bin, fill = mode_bin)) +
+  facet_wrap(vars(industry_bin),
+             labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
+  theme(strip.text.x = element_text(size = 8))
+
+girafe(ggobj = g)

@@ -2,7 +2,7 @@
 # GEOGRAPHIES: Region
 # SOURCE: 2020 5YR ACS PUMS
 # AUTHOR: Eric Clute
-# DATE MODIFIED: 10/27/2022
+# DATE MODIFIED: 10/31/2022
 
 library(magrittr)
 library(psrccensus)
@@ -15,7 +15,7 @@ library(tidyverse)
 
 # Pull data
 
-pums_raw <- get_psrc_pums(5,2020,"p", c("JWMNP","COW","INDP","JWTRNS"))
+pums_raw <- get_psrc_pums(5,2020,"p", c("JWMNP","INDP","JWTRNS","COW"))
 
 # Mutate data to create commute bins, mode bins, streamline/group by industry categories
 # Filter uses the COW (Class of worker) variable. Universe excludes ages <16, non workers. 
@@ -90,33 +90,106 @@ library(openxlsx)
 
 # HISTOGRAM OF SRV INDUSTRY
 
-srv_workers <- pums_workers$variables %>% 
-  filter(industry_bin == 'SRV')
 
-# interactive ggplot 
+# srv_workers <- pums_workers$variables %>%
+#   filter(industry_bin == 'SRV',
+#          mode_bin == 'Transit' | mode_bin == 'SOV')
+#
+# # interactive ggplot
+#
+# library(ggiraph)
+#
+# srv <- ggplot(srv_workers) +
+#   geom_histogram_interactive(aes(x = JWMNP, tooltip = JWMNP, fill = mode_bin)) +
+#   facet_wrap(vars(industry_bin),
+#              labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
+#   theme(strip.text.x = element_text(size = 8))
+#
+# girafe(ggobj = srv)
+
+# # static ggplot
+#
+# ggplot(srv_workers) +
+#   geom_histogram(aes(x = JWMNP, fill = mode_bin)) +
+#   facet_wrap(vars(industry_bin),
+#              labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
+#   theme(strip.text.x = element_text(size = 8))
+
+
+# HISTOGRAM OF SRV, RET, INF, EDU, MFG--------------
 
 library(ggiraph)
 
-g <- ggplot(srv_workers) +
+# SRV--------------
+pums_workers_sovtransit <- pums_workers$variables %>% 
+  filter(mode_bin == 'Transit' | mode_bin == 'SOV')
+
+srv_workers <- pums_workers_sovtransit %>% 
+  filter(industry_bin == 'SRV')
+
+srv_hist <- ggplot(srv_workers) +
   geom_histogram_interactive(aes(x = JWMNP, tooltip = JWMNP, fill = mode_bin)) +
   facet_wrap(vars(industry_bin),
              labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
   theme(strip.text.x = element_text(size = 8))
 
-girafe(ggobj = g)
+girafe(ggobj = srv_hist)
 
-# static ggplot
+# RET--------------
+ret_workers <- pums_workers_sovtransit %>% 
+  filter(industry_bin == 'RET')
 
-ggplot(srv_workers) +
-  geom_histogram(aes(x = JWMNP, fill = mode_bin)) +
+inf_hist <- ggplot(ret_workers) +
+  geom_histogram_interactive(aes(x = JWMNP, tooltip = JWMNP, fill = mode_bin)) +
   facet_wrap(vars(industry_bin),
              labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
   theme(strip.text.x = element_text(size = 8))
 
+girafe(ggobj = inf_hist)
 
-  
+# INF--------------
+inf_workers <- pums_workers_sovtransit %>% 
+  filter(industry_bin == 'INF')
+
+inf_hist <- ggplot(inf_workers) +
+  geom_histogram_interactive(aes(x = JWMNP, tooltip = JWMNP, fill = mode_bin)) +
+  facet_wrap(vars(industry_bin),
+             labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
+  theme(strip.text.x = element_text(size = 8))
+
+girafe(ggobj = inf_hist)
+
+# EDU--------------
+edu_workers <- pums_workers_sovtransit %>% 
+  filter(industry_bin == 'EDU')
+
+edu_hist <- ggplot(edu_workers) +
+  geom_histogram_interactive(aes(x = JWMNP, tooltip = JWMNP, fill = mode_bin)) +
+  facet_wrap(vars(industry_bin),
+             labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
+  theme(strip.text.x = element_text(size = 8))
+
+girafe(ggobj = edu_hist)
+
+# MFG--------------
+mfg_workers <- pums_workers_sovtransit %>% 
+  filter(industry_bin == 'MFG')
+
+mfg_hist <- ggplot(mfg_workers) +
+  geom_histogram_interactive(aes(x = JWMNP, tooltip = JWMNP, fill = mode_bin)) +
+  facet_wrap(vars(industry_bin),
+             labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
+  theme(strip.text.x = element_text(size = 8))
+
+girafe(ggobj = mfg_hist)
 
 
+# HISTOGRAM OF ALL INDUSTRIES--------------
 
+hist_allworkers <- ggplot(pums_workers_sovtransit) +
+  geom_histogram_interactive(aes(x = JWMNP, tooltip = commute_bin, fill = mode_bin)) +
+  facet_wrap(vars(industry_bin),
+             labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
+  theme(strip.text.x = element_text(size = 8))
 
-
+girafe(ggobj = hist_allworkers)

@@ -90,21 +90,21 @@ write.xlsx(commutebyind_sovtransit_meanmedian, "meanmediancommutebyindustry_SOVT
 
 # HISTOGRAM OF SRV INDUSTRY
 
-srv_workers <- pums_workers$variables %>% 
-  filter(industry_bin == 'SRV',
-         mode_bin == 'Transit' | mode_bin == 'SOV')
-
-# interactive ggplot 
-
-library(ggiraph)
-
-srv <- ggplot(srv_workers) +
-  geom_histogram_interactive(aes(x = JWMNP, tooltip = JWMNP, fill = mode_bin)) +
-  facet_wrap(vars(industry_bin),
-             labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
-  theme(strip.text.x = element_text(size = 8))
-
-girafe(ggobj = srv)
+# srv_workers <- pums_workers$variables %>% 
+#   filter(industry_bin == 'SRV',
+#          mode_bin == 'Transit' | mode_bin == 'SOV')
+# 
+# # interactive ggplot 
+# 
+# library(ggiraph)
+# 
+# srv <- ggplot(srv_workers) +
+#   geom_histogram_interactive(aes(x = JWMNP, tooltip = JWMNP, fill = mode_bin)) +
+#   facet_wrap(vars(industry_bin),
+#              labeller = labeller(industry_bin = label_wrap_gen(width = 35))) +
+#   theme(strip.text.x = element_text(size = 8))
+# 
+# girafe(ggobj = srv)
 
 # # static ggplot
 # 
@@ -115,6 +115,8 @@ girafe(ggobj = srv)
 #   theme(strip.text.x = element_text(size = 8))
 
 # HISTOGRAM OF SRV, RET, INF, EDU, MFG--------------
+
+library(ggiraph)
 
 # SRV--------------
 pums_workers_sovtransit <- pums_workers$variables %>% 
@@ -178,8 +180,6 @@ mfg_hist <- ggplot(mfg_workers) +
   theme(strip.text.x = element_text(size = 8))
 
 girafe(ggobj = mfg_hist)
-
-
 
 
 # HISTOGRAM OF ALL INDUSTRIES--------------

@@ -53,7 +53,7 @@ commutebyindustryandmode_median <- pums_workers %>% filter(!is.na(JWMNP)) %>% ps
 commutebyindustry_mean <- pums_workers %>% filter(!is.na(JWMNP)) %>% psrc_pums_mean("JWMNP", group_vars = "industry_bin")
 commutebyindustryandmode_mean <- pums_workers %>% filter(!is.na(JWMNP)) %>% psrc_pums_mean("JWMNP", group_vars = c("industry_bin", "mode_bin"))
 
-# Export to Excel for graphing
+# Export to Excel
 
 commutebyindustry_mean <- subset(commutebyindustry_mean, select = -c(DATA_YEAR,COUNTY))
 commutebyindustry_meanmedian <- inner_join(commutebyindustry_median, commutebyindustry_mean, by = 'industry_bin')
@@ -77,7 +77,7 @@ commutebyind_sovtransit_mean_pivot <- commutebyind_sovtransit_mean %>%
               names_from = 'mode_bin',
               values_from = c('JWMNP_mean','JWMNP_mean_moe'))
 
-# Export to Excel for graphing
+# Export to Excel
 
 commutebyind_sovtransit_meanmedian <- inner_join(commutebyind_sovtransit_median_pivot,
                                            commutebyind_sovtransit_mean_pivot, by = 'industry_bin')

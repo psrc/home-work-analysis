@@ -2,7 +2,7 @@
 # GEOGRAPHIES: Region
 # SOURCE: 2020 5YR ACS PUMS
 # AUTHOR: Eric Clute
-# DATE MODIFIED: 10/31/2022
+# DATE MODIFIED: 11/16/2022
 
 library(magrittr)
 library(psrccensus)
@@ -10,8 +10,6 @@ library(dplyr)
 library(srvyr)
 library(stringr)
 library(tidyverse)
-
-setwd("J:/Projects/Home_Work_Connections/PUMS")
 
 # Pull data
 
@@ -84,6 +82,14 @@ commutebyind_sovtransit_meanmedian <- inner_join(commutebyind_sovtransit_median_
 library(openxlsx)
 
 write.xlsx(commutebyind_sovtransit_meanmedian, "meanmediancommutebyindustry_SOVTransit_raw.xlsx")
+
+# ---------------------------------------------------
+
+# COUNT OF WORKERS BY INDUSTRY, BY MODE
+
+worker_per_industry <- pums_workers %>%
+  filter(mode_bin == 'SOV' | mode_bin == 'Transit') %>%
+  psrc_pums_count(stat_var = "SERIALNO", group_vars = c("mode_bin", "industry_bin"), incl_na = FALSE)
 
 
 # ---------------------------------------------------

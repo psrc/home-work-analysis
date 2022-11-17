@@ -43,7 +43,11 @@ pums_workers <- pums_raw %>%
                             grepl("^(Motorcycle|Taxicab|Other method)", as.character(JWTRNS)) ~ "Other",
                             !is.na(JWTRNS) ~ as.character(JWTRNS))))
 
-# Create median/mean commute by industry -----
+# ---------------------------------------------------
+
+# COMPARING MEAN TO MEDIAN
+
+# Create median/mean commute by industry
 
 commutebyindustry_median <- pums_workers %>% filter(!is.na(JWMNP)) %>% psrc_pums_median("JWMNP", group_vars = "industry_bin")
 commutebyindustryandmode_median <- pums_workers %>% filter(!is.na(JWMNP)) %>% psrc_pums_median("JWMNP", group_vars = c("industry_bin", "mode_bin"))
@@ -93,14 +97,6 @@ worker_per_industry <- pums_workers %>%
 worker_per_industry <- pums_workers %>%
   filter(mode_bin == 'SOV' | mode_bin == 'Transit') %>%
   psrc_pums_count(stat_var = "SERIALNO", group_vars = c("mode_bin", "industry_bin"), incl_na = FALSE)
-
-# ---------------------------------------------------
-
-pums_workers_1 <- pums_raw %>%
-  filter((!grepl("^(Unemployed)", as.character(COW)) & !is.na(COW)))
-
-test <- pums_workers_1 %>%
-  psrc_pums_count(stat_var = "SERIALNO", incl_na = FALSE)
 
 # worker_per_industry_pivot <- worker_per_industry %>%
 #   pivot_wider(id_cols = c('DATA_YEAR', 'COUNTY'),

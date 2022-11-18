@@ -98,10 +98,9 @@ worker_per_industry <- pums_workers %>%
   filter(mode_bin == 'SOV' | mode_bin == 'Transit') %>%
   psrc_pums_count(stat_var = "SERIALNO", group_vars = c("mode_bin", "industry_bin"), incl_na = FALSE)
 
-# worker_per_industry_pivot <- worker_per_industry %>%
-#   pivot_wider(id_cols = c('DATA_YEAR', 'COUNTY'),
-#               names_from = 'mode_bin',
-#               values_from = 'count')
+library(openxlsx)
+
+write.xlsx(worker_per_industry, "worker_per_industry.xlsx")
 
 # ---------------------------------------------------
 

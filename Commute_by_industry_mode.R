@@ -13,14 +13,14 @@ library(tidyverse)
 
 # Pull data
 
-pums_raw <- get_psrc_pums(5,2020,"p", c("JWMNP","INDP","JWTRNS","COW"))
+pums_raw <- get_psrc_pums(5,2020,"p", c("JWMNP","INDP","JWTRNS","ESR"))
 
 # Mutate data to create commute bins, mode bins, streamline/group by industry categories
-# Filter uses the COW (Class of worker) variable. Universe excludes ages <16, non workers. 
-#   "^(unemployed)" call removes unemployed workers from data. 
+# Filter uses the ESR (Employment Status Recode) variable. Universe excludes ages <16, non workers. 
+#   "^(Civilian|Armed)" call removes unemployed workers from data. 
 
 pums_workers <- pums_raw %>%
-  filter((!grepl("^(Unemployed)", as.character(COW)) & !is.na(COW))) %>%
+  filter((grepl("^(Civilian|Armed) ", as.character(ESR)) & !is.na(ESR))) %>%
   mutate(
     commute_bin=factor(case_when(JWMNP < 15 ~ "Under 15 min",
                                  JWMNP < 30 ~ "15-30 min",

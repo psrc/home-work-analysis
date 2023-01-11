@@ -2,7 +2,7 @@
 # GEOGRAPHIES: Region
 # SOURCE: 2020 5YR ACS PUMS
 # AUTHOR: Eric Clute
-# DATE MODIFIED: 11/16/2022
+# DATE MODIFIED: 01/11/2023
 
 library(magrittr)
 library(psrccensus)
@@ -35,36 +35,24 @@ pums_workers <- pums_raw %>%
                                 "60+ min",
                                 "Else")),
     industry_bin=str_extract(as.character(INDP),"(\\w+)"),
+    industry_bin=factor(case_when(grepl("^(EXT)", as.character(industry_bin)) ~ "AGR/EXT",
+                                  grepl("^(AGR)", as.character(industry_bin)) ~ "AGR/EXT",
+                                  !is.na(industry_bin) ~ as.character(industry_bin))),
     mode_bin=factor(case_when(grepl("^(Bicycle)", as.character(JWTRNS)) ~ "Bicycle",
                             grepl("(Bus|Ferryboat|rail)", as.character(JWTRNS)) ~ "Transit",
                             grepl("^(Car, truck, or van)", as.character(JWTRNS)) ~ "SOV",
                             grepl("^(Walked)", as.character(JWTRNS)) ~ "Walked",
                             grepl("^(Worked from home)", as.character(JWTRNS)) ~ "WFH",
                             grepl("^(Motorcycle|Taxicab|Other method)", as.character(JWTRNS)) ~ "Other",
-                            !is.na(JWTRNS) ~ as.character(JWTRNS))))
+                            !is.na(JWTRNS) ~ as.character(JWTRNS)))
+    )
 
 # ---------------------------------------------------
 
-# COMPARING MEAN TO MEDIAN
+# COMPARING MEAN AND MEDIAN INCORPORATING COMMUTE MODE
 
-# Create median/mean commute by industry
-
-commutebyindustry_median <- pums_workers %>% filter(!is.na(JWMNP)) %>% psrc_pums_median("JWMNP", group_vars = "industry_bin")
-commutebyindustryandmode_median <- pums_workers %>% filter(!is.na(JWMNP)) %>% psrc_pums_median("JWMNP", group_vars = c("industry_bin", "mode_bin"))
-
-commutebyindustry_mean <- pums_workers %>% filter(!is.na(JWMNP)) %>% psrc_pums_mean("JWMNP", group_vars = "industry_bin")
 commutebyindustryandmode_mean <- pums_workers %>% filter(!is.na(JWMNP)) %>% psrc_pums_mean("JWMNP", group_vars = c("industry_bin", "mode_bin"))
-
-# Export to Excel
-
-commutebyindustry_mean <- subset(commutebyindustry_mean, select = -c(DATA_YEAR,COUNTY))
-commutebyindustry_meanmedian <- inner_join(commutebyindustry_median, commutebyindustry_mean, by = 'industry_bin')
-
-library(openxlsx)
-
-write.xlsx(commutebyindustry_meanmedian, "meanmediancommutebyindustry_raw.xlsx")
-
-# Focus on just transit/SOV commutes
+commutebyindustryandmode_median <- pums_workers %>% filter(!is.na(JWMNP)) %>% psrc_pums_median("JWMNP", group_vars = c("industry_bin", "mode_bin"))
 
 commutebyind_sovtransit_median <- commutebyindustryandmode_median %>% filter(mode_bin == "Transit" | mode_bin == "SOV")
 commutebyind_sovtransit_mean <- commutebyindustryandmode_mean %>% filter(mode_bin == "Transit" | mode_bin == "SOV")
@@ -101,6 +89,22 @@ worker_per_industry <- pums_workers %>%
 library(openxlsx)
 
 write.xlsx(worker_per_industry, "worker_per_industry.xlsx")
+
+# ---------------------------------------------------
+
+# COMPARING MEAN AND MEDIAN (WITHOUT COMMUTE MODE)
+
+# Create median/mean commute by industry
+
+# commutebyindustry_median <- pums_workers %>% filter(!is.na(JWMNP)) %>% psrc_pums_median("JWMNP", group_vars = "industry_bin")
+# commutebyindustry_mean <- pums_workers %>% filter(!is.na(JWMNP)) %>% psrc_pums_mean("JWMNP", group_vars = "industry_bin")
+
+# commutebyindustry_mean <- subset(commutebyindustry_mean, select = -c(DATA_YEAR,COUNTY))
+# commutebyindustry_meanmedian <- inner_join(commutebyindustry_median, commutebyindustry_mean, by = 'industry_bin')
+
+# library(openxlsx)
+
+# write.xlsx(commutebyindustry_meanmedian, "meanmediancommutebyindustry_raw.xlsx")
 
 # ---------------------------------------------------
 
